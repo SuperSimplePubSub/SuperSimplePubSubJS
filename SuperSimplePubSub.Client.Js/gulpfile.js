@@ -26,8 +26,7 @@ gulp.task('lint', function() {
 var tsProject = ts.createProject(paths.configs.ts, { sortOutput: true });
 gulp.task('compile', function() {
   var tsResult = tsProject.src()
-    .pipe(sourcemaps.init())
-    .pipe(ts(tsProject));
+    .pipe(ts(tsProject, undefined, ts.reporter.longReporter()));
 
   return tsResult.js.pipe(gulp.dest('.'));
 });
