@@ -1,0 +1,6 @@
+SuperSimplePubSub.Client.Js/bower_components
+SuperSimplePubSub.Client.Js/node_modules
+SuperSimplePubSub.Client.Js/typings
+
+SuperSimplePubSub.Client.Js/src/*.js
+SuperSimplePubSub.Client.Js/tests/*.js

@@ -1,0 +1,21 @@
+{
+  "name": "SuperSimplePubSub",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fabian Raetz <fabian.raetz@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^2.3.0",
+    "gulp": "^3.8.11",
+    "karma": "^0.12.33",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^0.1.12",
+    "karma-mocha": "^0.1.10",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "mocha": "^2.2.5"
+  }
+}

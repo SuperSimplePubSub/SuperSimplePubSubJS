@@ -1,0 +1,22 @@
+{
+  "name": "SuperSimplePubSub",
+  "version": "0.0.0",
+  "authors": [
+    "Fabian Raetz <fabian.raetz@gmail.com>"
+  ],
+  "description": "simple PubSub",
+  "keywords": [
+    "signalr",
+    "pubsub",
+    "publish",
+    "subscribe"
+  ],
+  "license": "ISC",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
