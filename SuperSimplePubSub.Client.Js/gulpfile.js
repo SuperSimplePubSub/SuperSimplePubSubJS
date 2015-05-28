@@ -23,7 +23,11 @@ gulp.task('lint', function() {
 });
 
 
-var tsProject = ts.createProject(paths.configs.ts, { sortOutput: true });
+var tsProject = ts.createProject(paths.configs.ts, {
+  typescript: require('typescript'),
+  sortOutput: true
+});
+
 gulp.task('compile', function() {
   var tsResult = tsProject.src()
     .pipe(ts(tsProject, undefined, ts.reporter.longReporter()));

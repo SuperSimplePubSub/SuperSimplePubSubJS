@@ -20,6 +20,7 @@
         "./src/SuperSimplePubSub.ts",
         "./tests/SuperSimplePubSubTests.ts",
         "./typings/chai/chai.d.ts",
+        "./typings/es6.d.ts",
         "./typings/jquery/jquery.d.ts",
         "./typings/mocha/mocha.d.ts",
         "./typings/signalr/signalr.d.ts",
