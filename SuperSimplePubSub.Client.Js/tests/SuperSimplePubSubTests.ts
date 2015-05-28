@@ -26,6 +26,26 @@ describe('SuperSimplePubSub', () =>  {
 
       return subscription.promise.should.be.fulfilled;
     });
+
+    it('should return a Subscription with specified channel and default topic', () => {
+      var expectedChannel = 'sample.channel';
+      subscription = pubsub.subscribe({ channel: expectedChannel });
+
+      subscription.should.be.an.instanceOf(Subscription);
+      subscription.should.have.property('channel').equal(expectedChannel);
+
+      return subscription.promise.should.be.fulfilled;
+    });
+
+    it('should return a Subscription with specified topic and default channel', () => {
+      var expectedTopic = 'sample.topic';
+      subscription = pubsub.subscribe({ topic: expectedTopic });
+
+      subscription.should.be.an.instanceOf(Subscription);
+      subscription.should.have.property('topic').equal(expectedTopic);
+
+      return subscription.promise.should.be.fulfilled;
+    });
   });
 
 });
