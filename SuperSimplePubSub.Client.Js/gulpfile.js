@@ -25,6 +25,7 @@ gulp.task('lint', function() {
 
 var tsProject = ts.createProject(paths.configs.ts, {
   typescript: require('typescript'),
+  target: 'es5',
   sortOutput: true
 });
 

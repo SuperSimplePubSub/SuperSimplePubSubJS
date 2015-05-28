@@ -19,6 +19,7 @@
     "files": [
         "./src/SuperSimplePubSub.ts",
         "./tests/SuperSimplePubSubTests.ts",
+        "./typings/chai-as-promised/chai-as-promised.d.ts",
         "./typings/chai/chai.d.ts",
         "./typings/es6.d.ts",
         "./typings/jquery/jquery.d.ts",
