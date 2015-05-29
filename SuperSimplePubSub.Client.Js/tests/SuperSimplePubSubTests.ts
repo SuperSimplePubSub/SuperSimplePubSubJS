@@ -90,10 +90,35 @@ describe('SuperSimplePubSub', () =>  {
       });
 
       it('should be rejected after a specific time if no response received', () => {
+        let expectedEnvelope: IEnvelope = {
+          channel: DEFAULT_CHANNEL,
+          topic: DEFAULT_TOPIC
+        };
+
         let promise = pubsub.publish();
         clock.tick(5010);
 
-        return promise.should.be.rejectedWith('No ACK received!');
+        // fix type definition for rejectedWith
+        return promise.should.be.rejectedWith(Error/*, sinon.match(expectedEnvelope)*/);
+      });
+
+      it('should be rejected if a response with an error has been received', () => {
+        let expectedError = 'server error message';
+        let promise = pubsub.publish();
+
+        connection.send.should.have.been.calledOnce;
+        let data = sendStub.firstCall.args[0];
+        data.should.be.a('string');
+
+        let envelope = JSON.parse(data);
+        receivedStub.firstCall.args[0](JSON.stringify({
+          channel: SYSTEM_CHANNEL,
+          topic: SYSTEM_TOPIC_ACKERR,
+          data: expectedError,
+          _id: envelope._id
+        }));
+
+        return promise.should.be.rejectedWith(expectedError);
       });
 
       it('should be fulfilled if a response has been received within time', () => {

@@ -2,8 +2,10 @@ const DEFAULT_CHANNEL = '__default__';
 const DEFAULT_TOPIC = '/';
 
 const SYSTEM_CHANNEL = '__system__';
-const SYSTEM_TOPIC_SUBSCRIBE = 'subscribe-request';
 const SYSTEM_TOPIC_ACK = 'ack';
+const SYSTEM_TOPIC_ACKERR = 'ack.err';
+const SYSTEM_TOPIC_SUBSCRIBE = 'subscribe';
+
 
 class SuperSimplePubSub {
 
@@ -38,14 +40,14 @@ class SuperSimplePubSub {
       topic: DEFAULT_TOPIC
     };
 
-    envelope = Object.assign(defaults, envelope)
+    envelope = Object.assign(defaults, envelope);
     envelope._id = this.uuid();
 
     this._connection.send(JSON.stringify(envelope));
 
     return new Promise((resolve: Function, reject: Function) => {
       let timeoutId = setTimeout(() => {
-        reject('No ACK received!', envelope)
+        reject(new Error('No ACK received!'), envelope);
       }, 5000);
 
       this._unacknowledged[envelope._id] = {
@@ -57,17 +59,30 @@ class SuperSimplePubSub {
     });
   }
 
+  /**
+   * handles incoming data from the connection.
+   * @param  {string} data The json encoded data received from the connection
+   */
   private onReceived(data: string) {
-    let envelope = JSON.parse(data);
+    let envelope: IEnvelope = JSON.parse(data);
 
     let unacked = this._unacknowledged[envelope._id];
     if(unacked) {
       clearTimeout(unacked.timeoutId);
-      unacked.resolve(envelope.data, envelope);
       delete this._unacknowledged[envelope._id];
+
+      if (envelope.topic == SYSTEM_TOPIC_ACK) {
+        unacked.resolve(envelope.data, envelope);
+      } else if(envelope.topic == SYSTEM_TOPIC_ACKERR) {
+        unacked.reject(envelope.data, envelope);
+      }
     }
   }
 
+  /**
+   * generate a new uuid / guid
+   * @return {string}   The generated uuid / guid
+   */
   private uuid(a?: any): string {
     /* for a discussion see https://gist.github.com/jed/982883 */
 
@@ -98,7 +113,7 @@ class Subscription {
   get promise() { return this._promise; }
 
   constructor(private _options: ISubscribeOptions) {
-    this._promise = new Promise((resolve, reject) => {
+    this._promise = new Promise((resolve: Function, reject: Function) => {
       resolve();
     });
   }

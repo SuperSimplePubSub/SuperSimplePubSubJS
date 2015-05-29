@@ -14,7 +14,7 @@ describe('SignarRConnectionProxy', () => {
   });
 
   describe('send', () => {
-    it.skip('should take data and forward it to the underlying connection', () => {
+    it('should take data and forward it to the underlying connection', () => {
       let expectedData = 'sampledata';
       sinon.stub(signalr, 'send');
 
