@@ -119,6 +119,12 @@ class Subscription {
   }
 }
 
+
+interface IConnection {
+  send(data: string);
+  received(callback: (data: string) => any);
+}
+
 interface ISubscribeOptions {
   channel?: string;
   topic?: string;

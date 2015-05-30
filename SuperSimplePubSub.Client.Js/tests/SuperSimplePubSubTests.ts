@@ -4,7 +4,7 @@ describe('SuperSimplePubSub', () =>  {
   let subscription: Subscription;
 
   beforeEach(() => {
-    connection = new SignalRConnectionProxy($.connection('/pubsub'));
+    connection = $.connection('/pubsub')
     pubsub = new SuperSimplePubSub(connection);
   });
 
@@ -52,8 +52,6 @@ describe('SuperSimplePubSub', () =>  {
     let sendStub: Sinon.SinonStub;
 
     beforeEach(() => {
-      connection = new SignalRConnectionProxy($.connection('/pubsub'));
-
       /*
        * create stubs before using connection,
        * so we can stub the received callback which is hooked
