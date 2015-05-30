@@ -10,12 +10,14 @@ class Subscription {
    */
   get topic() { return this._options.topic; }
 
+	get callback() { return this._options.callback; }
+
   /**
    * Returns a promise which is fulfilled if the subscription
    * was successfull else the promise gets rejected.
    */
   get promise() { return this._promise; }
 
-  constructor(private _options: ISubscribeOptions, private _promise: Promise<any>) {
+  constructor(private _options: ISubscribeOptions, private _promise: Promise<IEnvelope>) {
   }
 }

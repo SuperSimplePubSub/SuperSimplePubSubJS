@@ -6,6 +6,41 @@ describe('SuperSimplePubSub', () =>  {
   let receivedStub: Sinon.SinonStub;
   let sendStub: Sinon.SinonStub;
 
+
+  let fakeReceivedMessage = (envelope: IEnvelope) => {
+    receivedStub.firstCall.args[0](JSON.stringify(envelope));
+  };
+
+  let fakeAckSubscription = (sendStubCall: Sinon.SinonSpyCall = sendStub.firstCall) => {
+    let data = sendStubCall.args[0];
+    data.should.be.a('string');
+
+    let envelope = JSON.parse(data);
+
+    fakeReceivedMessage({
+      channel: SYSTEM_CHANNEL,
+      topic: SYSTEM_TOPIC_ACK,
+      data: envelope.data,
+      _id: envelope._id
+    });
+  };
+
+
+  /*
+   * for an explanation see
+   * http://stackoverflow.com/questions/11235815/is-there-a-way-to-get-chai-working-with-asynchronous-mocha-tests
+   */
+  let check = (done: Function, f: Function): (envelope: IEnvelope) => any =>  {
+    return (envelope: IEnvelope) => {
+      try {
+        f();
+        done();
+      } catch(e) {
+        done(e);
+      }
+    };
+  };
+
   beforeEach(() => {
     connection = $.connection('/pubsub');
 
@@ -92,17 +127,14 @@ describe('SuperSimplePubSub', () =>  {
 
       it('should be rejected after a specific time if no response received', () => {
         // arrange
-        let expectedData: IEnvelope = {
-          channel: DEFAULT_CHANNEL,
-          topic: DEFAULT_TOPIC
-        };
+        let expectedError = 'No ACK received!';
 
         // act
-        let subscription = pubsub.subscribe();
+        subscription = pubsub.subscribe();
         clock.tick(5010);
 
-        // assert - TODO: fix type definition for rejectedWith
-        return subscription.promise.should.be.rejectedWith(Error/*, sinon.match(expectedEnvelope)*/);
+        // assert
+        return subscription.promise.should.be.rejectedWith(sinon.match({ data: expectedError }));
       });
 
       it('should be rejected if a response with an error has been received', () => {
@@ -110,7 +142,7 @@ describe('SuperSimplePubSub', () =>  {
         let expectedError = 'server error message';
 
         // act
-        let subscription = pubsub.subscribe();
+        subscription = pubsub.subscribe();
 
         connection.send.should.have.been.calledOnce;
         let data = sendStub.firstCall.args[0];
@@ -125,31 +157,103 @@ describe('SuperSimplePubSub', () =>  {
         }));
 
         // assert
-        return subscription.promise.should.be.rejectedWith(expectedError);
+        return subscription.promise.should.be.rejectedWith(sinon.match({ data: expectedError}));
       });
 
       it('should be fulfilled if a response has been received within time', () => {
         // act
-        let subscription = pubsub.subscribe();
-
-        connection.send.should.have.been.calledOnce;
-        let data = sendStub.firstCall.args[0];
-        data.should.be.a('string');
-
-        let envelope = JSON.parse(data);
-        receivedStub.firstCall.args[0](JSON.stringify({
-          channel: SYSTEM_CHANNEL,
-          topic: SYSTEM_TOPIC_ACK,
-          data: envelope.data,
-          _id: envelope._id
-        }));
+        subscription = pubsub.subscribe();
+        fakeAckSubscription();
 
         // assert
         return subscription.promise.should.be.fulfilled;
       });
     });
-  });
 
+    describe('subscription callback', () => {
+      it('should be a noop if not specified otherwise', (done: Function) => {
+        // arrange
+        let data = 'sampledata';
+        let envelope: IEnvelope = {
+          channel: DEFAULT_CHANNEL,
+          topic: DEFAULT_TOPIC,
+          data: data
+        };
+
+        subscription = pubsub.subscribe();
+        fakeAckSubscription();
+
+        // act
+        subscription.promise.then(check(done, () => {
+          receivedStub.firstCall.args[0](JSON.stringify(envelope));
+        }));
+      });
+
+      it('should be called when a matching message is received', (done: Function) => {
+        // arrange
+        let data = 'sampledata';
+        let envelope: IEnvelope = {
+          channel: DEFAULT_CHANNEL,
+          topic: DEFAULT_TOPIC,
+          data: data
+        };
+
+        let callbackSpy = sinon.spy();
+        subscription = pubsub.subscribe({ callback: callbackSpy });
+        fakeAckSubscription();
+
+        subscription.promise.then(check(done, () => {
+          // act
+          fakeReceivedMessage(envelope);
+
+          // assert
+          callbackSpy.should.have.been.calledOnce;
+          callbackSpy.should.have.been.calledWithExactly(data, envelope);
+        }));
+      });
+
+      it('of two different subscriptions should each be called one', (done: Function) => {
+        // arrange
+        let callbackSpy1 = sinon.spy();
+        let callbackSpy2 = sinon.spy();
+
+        let subscription1 = pubsub.subscribe({ topic: 'one', callback: callbackSpy1 });
+        let subscription2 = pubsub.subscribe({ topic: 'two', callback: callbackSpy2 });
+        fakeAckSubscription(sendStub.firstCall);
+        fakeAckSubscription(sendStub.secondCall);
+
+        Promise.all([subscription1.promise, subscription2.promise]).then(check(done, () => {
+          // act
+          fakeReceivedMessage({ channel: DEFAULT_CHANNEL, topic: 'one' });
+          fakeReceivedMessage({ channel: DEFAULT_CHANNEL, topic: 'two' });
+
+          // assert
+          callbackSpy1.should.have.been.calledOnce;
+          callbackSpy2.should.have.been.calledOnce;
+        }));
+      });
+
+      it('of two equal subscriptions should be called each once', (done: Function) => {
+        // arrange
+        let callbackSpy1 = sinon.spy();
+        let callbackSpy2 = sinon.spy();
+
+        let subscription1 = pubsub.subscribe({ topic: 'one', callback: callbackSpy1 });
+        let subscription2 = pubsub.subscribe({ topic: 'one', callback: callbackSpy2 });
+        fakeAckSubscription(sendStub.firstCall);
+        fakeAckSubscription(sendStub.secondCall);
+
+        Promise.all([subscription1.promise, subscription2.promise]).then(check(done, () => {
+          // act
+          fakeReceivedMessage({ channel: DEFAULT_CHANNEL, topic: 'one' });
+
+          // assert
+          callbackSpy1.should.have.been.calledOnce;
+          callbackSpy2.should.have.been.calledOnce;
+        }));
+      });
+    });
+  });
 
   describe('publish', () => {
     it('should create and send an envelope over the connection', () => {
@@ -180,17 +284,14 @@ describe('SuperSimplePubSub', () =>  {
 
       it('should be rejected after a specific time if no response received', () => {
         // arrange
-        let expectedEnvelope: IEnvelope = {
-          channel: DEFAULT_CHANNEL,
-          topic: DEFAULT_TOPIC
-        };
+        let expectedError = 'No ACK received!';
 
         // act
         let promise = pubsub.publish();
         clock.tick(5010);
 
-        // assert - TODO: fix type definition for rejectedWith
-        return promise.should.be.rejectedWith(Error/*, sinon.match(expectedEnvelope)*/);
+        // assert
+        return promise.should.be.rejectedWith(sinon.match({ data: expectedError }));
       });
 
       it('should be rejected if a response with an error has been received', () => {
@@ -213,7 +314,7 @@ describe('SuperSimplePubSub', () =>  {
         }));
 
         // assert
-        return promise.should.be.rejectedWith(expectedError);
+        return promise.should.be.rejectedWith(sinon.match({ data: expectedError }));
       });
 
       it('should be fulfilled if a response has been received within time', () => {

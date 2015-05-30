@@ -6,10 +6,14 @@ const SYSTEM_TOPIC_ACK = 'ack';
 const SYSTEM_TOPIC_ACKERR = 'ack.err';
 const SYSTEM_TOPIC_SUBSCRIBE = 'subscribe';
 
+/* tslint:disable:no-empty */
+const noop = () => {};
+/* tslint:enable:no-empty */
 
 class SuperSimplePubSub {
 
   private _unacknowledged: { [ _id: string ]: IUnacknowledged} = {};
+  private _subscriptions: { [ channel: string ]: { [ topic: string ] : Subscription[] } } = {};
 
   /**
    * Return the underlying connection which is used to
@@ -29,7 +33,8 @@ class SuperSimplePubSub {
   subscribe(options?: ISubscribeOptions): Subscription {
     let defaults: ISubscribeOptions = {
       channel: DEFAULT_CHANNEL,
-      topic: DEFAULT_TOPIC
+      topic: DEFAULT_TOPIC,
+      callback: noop
     };
 
     defaults = Object.assign(defaults, options);
@@ -43,9 +48,9 @@ class SuperSimplePubSub {
 
     this._connection.send(JSON.stringify(envelope));
 
-    let promise = new Promise((resolve: Function, reject: Function) => {
+    let promise = new Promise<IEnvelope>((resolve: Function, reject: Function) => {
       let timeoutId = setTimeout(() => {
-        reject(new Error('No ACK received!'), envelope.data);
+        reject({ data: 'No ACK received!' });
       }, 5000);
 
       this._unacknowledged[envelope._id] = {
@@ -56,7 +61,25 @@ class SuperSimplePubSub {
       };
     });
 
-    return new Subscription(defaults, promise);
+    let subscription = new Subscription(defaults, promise);
+
+    promise.then((envelope: IEnvelope) => {
+      let channelSubscriptions = this._subscriptions[subscription.channel];
+      if(!channelSubscriptions) {
+        channelSubscriptions = this._subscriptions[subscription.channel] = {};
+      }
+
+      let topicSubscriptions = channelSubscriptions[subscription.topic];
+      if (!topicSubscriptions) {
+        topicSubscriptions = channelSubscriptions[subscription.topic] = [];
+      }
+
+      topicSubscriptions.push(subscription);
+
+      return envelope;
+    });
+
+    return subscription;
   }
 
   publish(envelope?: IEnvelope) : Promise<any> {
@@ -72,7 +95,7 @@ class SuperSimplePubSub {
 
     return new Promise((resolve: Function, reject: Function) => {
       let timeoutId = setTimeout(() => {
-        reject(new Error('No ACK received!'), envelope);
+        reject({ data: 'No ACK received!' });
       }, 5000);
 
       this._unacknowledged[envelope._id] = {
@@ -97,9 +120,19 @@ class SuperSimplePubSub {
       delete this._unacknowledged[envelope._id];
 
       if (envelope.topic == SYSTEM_TOPIC_ACK) {
-        unacked.resolve(envelope.data, envelope);
+        unacked.resolve(envelope);
       } else if(envelope.topic == SYSTEM_TOPIC_ACKERR) {
-        unacked.reject(envelope.data, envelope);
+        unacked.reject(envelope);
+      }
+    }
+
+    let channelSubscriptions = this._subscriptions[envelope.channel];
+    if (channelSubscriptions) {
+      let topicSubscriptions = channelSubscriptions[envelope.topic];
+      if (topicSubscriptions) {
+        for (let subscription of topicSubscriptions) {
+          subscription.callback(envelope.data, envelope);
+        }
       }
     }
   }
@@ -126,6 +159,7 @@ interface IConnection {
 interface ISubscribeOptions {
   channel?: string;
   topic?: string;
+  callback?: (data: any, envelope: IEnvelope) => any
 }
 
 interface IEnvelope {
