@@ -31,7 +31,32 @@ class SuperSimplePubSub {
       channel: DEFAULT_CHANNEL,
       topic: DEFAULT_TOPIC
     };
-    return new Subscription(Object.assign(defaults, options));
+
+    defaults = Object.assign(defaults, options);
+
+    let envelope: IEnvelope= {
+      channel: SYSTEM_CHANNEL,
+      topic: SYSTEM_TOPIC_SUBSCRIBE,
+      data: defaults
+    };
+    envelope._id = this.uuid();
+
+    this._connection.send(JSON.stringify(envelope));
+
+    let promise = new Promise((resolve: Function, reject: Function) => {
+      let timeoutId = setTimeout(() => {
+        reject(new Error('No ACK received!'), envelope.data);
+      }, 5000);
+
+      this._unacknowledged[envelope._id] = {
+        envelope: envelope,
+        resolve: resolve,
+        reject: reject,
+        timeoutId: timeoutId
+      };
+    });
+
+    return new Subscription(defaults, promise);
   }
 
   publish(envelope?: IEnvelope) : Promise<any> {
@@ -89,33 +114,6 @@ class SuperSimplePubSub {
     /* tslint:disable */
     return a?(a^Math.random()*16>>a/4).toString(16):((<any>[1e7])+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,this.uuid);
     /* tslint:enable */
-  }
-}
-
-class Subscription {
-
-  private _promise: Promise<any>;
-
-  /**
-   * Return the subscription's channel.
-   */
-  get channel() { return this._options.channel; }
-
-  /**
-   * Returns the subscriptions's topic.
-   */
-  get topic() { return this._options.topic; }
-
-  /**
-   * Returns a promise which is fulfilled if the subscription
-   * was successfull else the promise gets rejected.
-   */
-  get promise() { return this._promise; }
-
-  constructor(private _options: ISubscribeOptions) {
-    this._promise = new Promise((resolve: Function, reject: Function) => {
-      resolve();
-    });
   }
 }
 

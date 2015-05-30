@@ -17,9 +17,9 @@
         "!./bower_components/**/*.ts"
     ],
     "files": [
-        "./src/SingalRConnectionProxy.ts",
+        "./src/Subscription.ts",
         "./src/SuperSimplePubSub.ts",
-        "./tests/SignalRConnectionProxy.ts",
+        "./tests/SubscriptionTests.ts",
         "./tests/SuperSimplePubSubTests.ts",
         "./typings/chai-as-promised/chai-as-promised.d.ts",
         "./typings/chai/chai.d.ts",
