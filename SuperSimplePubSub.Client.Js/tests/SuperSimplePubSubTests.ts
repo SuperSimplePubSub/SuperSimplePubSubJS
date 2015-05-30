@@ -4,7 +4,7 @@ describe('SuperSimplePubSub', () =>  {
   let subscription: Subscription;
 
   beforeEach(() => {
-    connection = $.connection('/pubsub')
+    connection = $.connection('/pubsub');
     pubsub = new SuperSimplePubSub(connection);
   });
 
@@ -16,8 +16,10 @@ describe('SuperSimplePubSub', () =>  {
 
   describe('subscribe', () => {
     it('should return a Subscription with default channel / topic', () => {
+      // act
       subscription = pubsub.subscribe();
 
+      // assert
       subscription.should.be.an.instanceOf(Subscription);
       subscription.should.have.property('channel').equal(DEFAULT_CHANNEL);
       subscription.should.have.property('topic').equal(DEFAULT_TOPIC);
@@ -26,9 +28,13 @@ describe('SuperSimplePubSub', () =>  {
     });
 
     it('should return a Subscription with specified channel and default topic', () => {
+      // arrange
       let expectedChannel = 'sample.channel';
+
+      // act
       subscription = pubsub.subscribe({ channel: expectedChannel });
 
+      // assert
       subscription.should.be.an.instanceOf(Subscription);
       subscription.should.have.property('channel').equal(expectedChannel);
 
@@ -36,9 +42,13 @@ describe('SuperSimplePubSub', () =>  {
     });
 
     it('should return a Subscription with specified topic and default channel', () => {
+      // arrange
       let expectedTopic = 'sample.topic';
+
+      // act
       subscription = pubsub.subscribe({ topic: expectedTopic });
 
+      // assert
       subscription.should.be.an.instanceOf(Subscription);
       subscription.should.have.property('topic').equal(expectedTopic);
 
@@ -64,8 +74,10 @@ describe('SuperSimplePubSub', () =>  {
     });
 
     it('should create and send an envelope over the connection', () => {
+      // act
       pubsub.publish();
 
+      // assert
       connection.send.should.have.been.calledOnce;
       let data = sendStub.firstCall.args[0];
       data.should.be.a('string');
@@ -88,20 +100,25 @@ describe('SuperSimplePubSub', () =>  {
       });
 
       it('should be rejected after a specific time if no response received', () => {
+        // arrange
         let expectedEnvelope: IEnvelope = {
           channel: DEFAULT_CHANNEL,
           topic: DEFAULT_TOPIC
         };
 
+        // act
         let promise = pubsub.publish();
         clock.tick(5010);
 
-        // fix type definition for rejectedWith
+        // assert - TODO: fix type definition for rejectedWith
         return promise.should.be.rejectedWith(Error/*, sinon.match(expectedEnvelope)*/);
       });
 
       it('should be rejected if a response with an error has been received', () => {
+        // arrange
         let expectedError = 'server error message';
+
+        // act
         let promise = pubsub.publish();
 
         connection.send.should.have.been.calledOnce;
@@ -116,10 +133,12 @@ describe('SuperSimplePubSub', () =>  {
           _id: envelope._id
         }));
 
+        // assert
         return promise.should.be.rejectedWith(expectedError);
       });
 
       it('should be fulfilled if a response has been received within time', () => {
+        // act
         let promise = pubsub.publish();
 
         connection.send.should.have.been.calledOnce;
@@ -133,6 +152,7 @@ describe('SuperSimplePubSub', () =>  {
           _id: envelope._id
         }));
 
+        // assert
         return promise.should.be.fulfilled;
       });
     });
