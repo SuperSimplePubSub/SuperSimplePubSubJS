@@ -53,7 +53,7 @@ describe('SuperSimplePubSub', () =>  {
 
     beforeEach(() => {
       /*
-       * create stubs before using connection,
+       * create stubs before using the connection,
        * so we can stub the received callback which is hooked
        * up in SuperSimplePubSub's constructor.
        */
