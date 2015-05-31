@@ -1,15 +1,15 @@
 SuperSimplePubSubJS
 ===================
 
-SuperSimplePubSub exposes a publish-subscribe based API on top of [SignalR's](https://github.com/SignalR/SignalR) [PersistentConnection](https://github.com/SignalR/SignalR/wiki/QuickStart-Persistent-Connections). SuperSimplePubSub provides an alternative API to the [Hub](http://www.asp.net/signalr/overview/guide-to-the-api) based API provided by SignalR.
+SuperSimplePubSub exposes a publish-subscribe based API on top of [SignalR's](https://github.com/SignalR/SignalR) [PersistentConnection](https://github.com/SignalR/SignalR/wiki/QuickStart-Persistent-Connections). SuperSimplePubSub provides an alternative to the [Hub](http://www.asp.net/signalr/overview/guide-to-the-api) based API provided by SignalR.
 
 
 This repository contains the Javascript part whereas the serverside part is hosted over at [https://github.com/SuperSimplePubSub/SuperSimplePubSub](https://github.com/SuperSimplePubSub/SuperSimplePubSub)
 
-*** WARNING: This is alpha code NOT suitable for production. The
+**WARNING: This is alpha code NOT suitable for production. The
 implementation and API will likely change in significant ways during the
 next months. The code and algorithms are not tested enough. A lot more work
-is needed. ***
+is needed.**
 
 ## How to install this crap?
 
@@ -18,14 +18,14 @@ $ bower install SuperSimplePubSubJS --save  # or
 $ npm install SuperSimplePubSubJS --save
 ```
 
-*** INFO: SuperSimplePubSub relies on some API's which are not implemented
+**INFO: SuperSimplePubSub relies on some API's which are not implemented
 by all browers yet. Until now these are [Object.assign](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
 and ES6
 [Promises](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 You have to provide the appropriate shims for these API's.
 SuperSimplePubSubJS uses [es5-shim](https://github.com/es-shims/es5-shim) and
 [es6-shim](https://github.com/es-shims/es6-shim) to provide a modern
- environment. ***
+ environment.**
 
 ```bash
 $ bower install es5-shim es6-shim --save
