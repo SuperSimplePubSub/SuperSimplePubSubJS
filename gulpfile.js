@@ -40,7 +40,7 @@ gulp.task('compile', function() {
 gulp.task('test', ['compile'], function(done) {
   karma.start({
     configFile: paths.configs.karma,
-    browsers: ['Chrome', 'Firefox'],
+    browsers: ['PhantomJS', 'Firefox'],
     singleRun: true
   }, done);
 });
