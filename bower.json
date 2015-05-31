@@ -5,7 +5,11 @@
     "Fabian Raetz <fabian.raetz@gmail.com>"
   ],
   "description": "publish-subscribe based API on top of SignalR",
-  "keywords": [
+	"repository" : {
+		"type" : "git",
+		"url" : "https://github.com/SuperSimplePubSub/SuperSimplePubSubJS.git"
+  },
+	"keywords": [
     "signalr",
     "pubsub",
     "publish",

@@ -2,7 +2,11 @@
   "name": "SuperSimplePubSubJS",
   "version": "0.0.1",
   "description": "publish-subscribe based API on top of SignalR",
-  "scripts": {
+	"repository" : {
+		"type" : "git",
+		"url" : "https://github.com/SuperSimplePubSub/SuperSimplePubSubJS.git"
+  },
+	"scripts": {
     "test": "gulp test"
   },
   "author": "Fabian Raetz <fabian.raetz@gmail.com>",
