@@ -6,25 +6,25 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "jquery/jquery.d.ts": {
-      "commit": "70737c2a2496f7a13c4da63eb00081cad94d19f1"
+      "commit": "2ca2ee37d47df607cc006824c516050a4cf869f0"
     },
     "signalr/signalr.d.ts": {
-      "commit": "70737c2a2496f7a13c4da63eb00081cad94d19f1"
+      "commit": "2ca2ee37d47df607cc006824c516050a4cf869f0"
     },
     "mocha/mocha.d.ts": {
-      "commit": "70737c2a2496f7a13c4da63eb00081cad94d19f1"
+      "commit": "2ca2ee37d47df607cc006824c516050a4cf869f0"
     },
     "chai/chai.d.ts": {
-      "commit": "70737c2a2496f7a13c4da63eb00081cad94d19f1"
+      "commit": "2ca2ee37d47df607cc006824c516050a4cf869f0"
     },
     "chai-as-promised/chai-as-promised.d.ts": {
-      "commit": "70737c2a2496f7a13c4da63eb00081cad94d19f1"
+      "commit": "2ca2ee37d47df607cc006824c516050a4cf869f0"
     },
     "sinon/sinon.d.ts": {
-      "commit": "2d4c4679bc2b509f27435a4f9da5e2de11258571"
+      "commit": "2ca2ee37d47df607cc006824c516050a4cf869f0"
     },
     "sinon-chai/sinon-chai.d.ts": {
-      "commit": "2d4c4679bc2b509f27435a4f9da5e2de11258571"
+      "commit": "2ca2ee37d47df607cc006824c516050a4cf869f0"
     }
   }
 }
