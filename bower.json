@@ -1,10 +1,10 @@
 {
-  "name": "SuperSimplePubSub",
-  "version": "0.0.0",
+  "name": "SuperSimplePubSubJS",
+  "version": "0.0.1",
   "authors": [
     "Fabian Raetz <fabian.raetz@gmail.com>"
   ],
-  "description": "simple PubSub",
+  "description": "publish-subscribe based API on top of SignalR",
   "keywords": [
     "signalr",
     "pubsub",

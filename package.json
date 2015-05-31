@@ -1,8 +1,7 @@
 {
-  "name": "SuperSimplePubSub",
-  "version": "0.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "SuperSimplePubSubJS",
+  "version": "0.0.1",
+  "description": "publish-subscribe based API on top of SignalR",
   "scripts": {
     "test": "gulp test"
   },
