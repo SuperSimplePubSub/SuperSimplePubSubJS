@@ -4,6 +4,7 @@ node_js:
   - '0.10'
 
 install:
-  - npm install -g bower gulp
+  - npm install -g bower gulp tsd
   - npm install
   - bower install
+	- tsd install
