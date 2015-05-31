@@ -4,6 +4,7 @@ SuperSimplePubSubJS
 SuperSimplePubSub exposes a publish-subscribe based API on top of [SignalR's](https://github.com/SignalR/SignalR) [PersistentConnection](https://github.com/SignalR/SignalR/wiki/QuickStart-Persistent-Connections). SuperSimplePubSub provides an alternative to the [Hub](http://www.asp.net/signalr/overview/guide-to-the-api) based API provided by SignalR.
 
 
+
 This repository contains the Javascript part whereas the serverside part is hosted over at [https://github.com/SuperSimplePubSub/SuperSimplePubSub](https://github.com/SuperSimplePubSub/SuperSimplePubSub)
 
 **WARNING: This is alpha code NOT suitable for production. The
